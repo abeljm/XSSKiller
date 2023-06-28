@@ -93,6 +93,7 @@ def main():
     parser.add_argument('-l', '--list', help='Archivo con lista de urls', metavar='')
     parser.add_argument('-s', '--pipe', help='Recibir datos de stding/pipe', action='store_true')
     parser.add_argument('-w', '--payload', help='lista de payloads XSS', metavar='')
+    parser.add_argument('-r', '--reflect', help='buscar palabra reflejada', metavar='')
     parser.add_argument('-p', '--proxy', type=str, help='Especifica un proxy para utilizar con las peticiones', metavar='')
     parser.add_argument('-d', help='duracion del escaneo', action='store_true')
     parser.add_argument('-o', '--output', help='Guardar output en archivo de texto', metavar='')
@@ -111,6 +112,8 @@ def main():
 
     if args.payload:
         payloads = [line.strip() for line in open(args.payload,"r")]
+    elif args.reflect:
+        payloads = [args.reflect]
     else:
         payloads = ["\"></script><script>alert('xss')</script>"]
     
