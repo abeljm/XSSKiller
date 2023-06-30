@@ -37,7 +37,7 @@ def printError(msg):
 def printSuccess(msg):
     print(f"{Fore.GREEN}[+] {msg}{Fore.RESET}")
 
-def Send_req(url,payloads,file,verbose, proxy):
+def sendRequest(url,payloads,file,verbose, proxy):
     for payload in payloads:
         payload_enc = urllib.parse.quote(payload)
         new_url = re.sub(r"=[^?\|&]*", "=" + payload_enc, url)
@@ -68,22 +68,20 @@ def Send_req(url,payloads,file,verbose, proxy):
         except requests.exceptions.HTTPError as e:
             pass
 
-def Threads_req(list_url,list_payloads,workers,file,verbose,proxy):
+def threadRequests(list_url,list_payloads,workers,file,verbose,proxy):
     threads = []
     with ThreadPoolExecutor(max_workers=workers)  as executor:
         for url in list_url:
             url = url.strip()
-            t = executor.submit(Send_req,url,list_payloads,file,verbose,proxy)
+            t = executor.submit(sendRequest,url,list_payloads,file,verbose,proxy)
             threads.append(t)
         wait(threads)
 
-def saveFile(name_file,data):
+def saveFile(name_file, data):
     path = os.getcwd()
-    path_file = "%s/%s" %(path,name_file)
+    path_file = os.path.join(path, name_file)
     with open(path_file, mode='a+', encoding='utf-8') as file:
-        file.write('%s\n' %(data))
-        file.close()
-
+        file.write('%s\n' % data)
 
 def main():    
     parser = argparse.ArgumentParser()
@@ -127,10 +125,10 @@ def main():
         url = [line.strip() for line in open(args.list,"r")]
 
     else:
-        print("Nesecariamente tiene que poner -u o -l")
+        print("Nesecariamente tiene que poner los argumentos -u --url, -l --list, -s --pipe")
         sys.exit(2)
 
-    Threads_req(url,payloads,args.threads,args.output,args.verbose,args.proxy)
+    threadRequests(url,payloads,args.threads,args.output,args.verbose,args.proxy)
 
     if args.d:
         total_time = time.time() - init_time
